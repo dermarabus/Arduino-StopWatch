@@ -1,0 +1,61 @@
+// Stopwatch Variables
+unsigned long startTime = 0;
+unsigned long elapsedTime = 0;
+bool isRunning = false;
+
+// Button Pin
+const int buttonPin = 2;
+
+void setup() {
+  Serial.begin(9600); // Initialize serial communication
+  pinMode(buttonPin, INPUT_PULLUP); // Set button pin as input with internal pull-up resistor
+}
+
+void loop() {
+  // Check if the button is pressed
+  if (digitalRead(buttonPin) == LOW) {
+    if (!isRunning) {
+      startStopwatch();
+    } else {
+      stopStopwatch();
+    }
+    delay(100); // Add a small delay to debounce the button
+  }
+
+  // Update stopwatch and display time on the serial monitor
+  if (isRunning) {
+    updateStopwatch();
+    displayTime();
+  }
+}
+
+void startStopwatch() {
+  startTime = millis();
+  isRunning = true;
+}
+
+void stopStopwatch() {
+  elapsedTime = millis() - startTime;
+  isRunning = false;
+}
+
+void updateStopwatch() {
+  elapsedTime = millis() - startTime;
+}
+
+void displayTime() {
+  unsigned long milliseconds = elapsedTime % 1000;
+  unsigned long seconds = (elapsedTime / 1000) % 60;
+  unsigned long minutes = (elapsedTime / 60000) % 60;
+  unsigned long hours = (elapsedTime / 3600000) % 24;
+
+  Serial.print("Elapsed Time: ");
+  Serial.print(hours);
+  Serial.print("h ");
+  Serial.print(minutes);
+  Serial.print("m ");
+  Serial.print(seconds);
+  Serial.print("s ");
+  Serial.print(milliseconds);
+  Serial.println("ms");
+}
